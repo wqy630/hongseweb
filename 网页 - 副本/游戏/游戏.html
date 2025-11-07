@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中国知识问答比赛</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 30px 20px;
+            background: linear-gradient(135deg, #c00, #900);
+            color: #fff;
+            border-radius: 15px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 6px rgba(0, 0, 0, 0.4);
+            position: relative;
+        }
+        
+        .world {
+            color: white;
+            text-decoration: none;
+            font-weight: 600;
+            padding: 12px 24px;
+            border-radius: 8px;
+            transition: all 0.3s;
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 18px;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .world:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+        }
+        
+        .world::before {
+            content: "🏠";
+            font-size: 20px;
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.5;
+        }
+        
+        .game-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.08);
+            border-top: 4px solid #c00;
+        }
+        
+        .score, .timer {
+            font-size: 1.4rem;
+            font-weight: bold;
+            color: #c00;
+            display: flex;
+            align-items: center;
+        }
+        
+        .score::before {
+            content: "★";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .timer::before {
+            content: "⏱";
+            margin-right: 8px;
+            font-size: 1.2rem;
+        }
+        
+        .question-container {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            border-top: 4px solid #c00;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .question-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(204, 0, 0, 0.03) 0%, rgba(153, 0, 0, 0.03) 100%);
+            z-index: 0;
+        }
+        
+        .question-number {
+            font-size: 1.2rem;
+            color: #666;
+            margin-bottom: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .question {
+            font-size: 1.5rem;
+            margin-bottom: 25px;
+            color: #333;
+            line-height: 1.5;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .option {
+            padding: 18px 20px;
+            background-color: #f9f9f9;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .option::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(204, 0, 0, 0.05) 0%, rgba(153, 0, 0, 0.05) 100%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        
+        .option:hover {
+            background-color: #f0f0f0;
+            border-color: #c00;
+            transform: translateX(5px);
+        }
+        
+        .option:hover::before {
+            opacity: 1;
+        }
+        
+        .option.selected {
+            background-color: #ffe6e6;
+            border-color: #c00;
+            color: #c00;
+            font-weight: 600;
+            box-shadow: 0 3px 10px rgba(204, 0, 0, 0.2);
+        }
+        
+        .option.correct {
+            background-color: #e6ffe6;
+            border-color: #0a0;
+            color: #0a0;
+            font-weight: 600;
+        }
+        
+        .option.incorrect {
+            background-color: #ffe6e6;
+            border-color: #c00;
+            color: #c00;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        button {
+            padding: 14px 30px;
+            background: linear-gradient(135deg, #c00, #900);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.1rem;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(204, 0, 0, 0.3);
+        }
+        
+        button:hover {
+            background: linear-gradient(135deg, #900, #700);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(204, 0, 0, 0.4);
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .result-container {
+            text-align: center;
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            padding: 50px 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+            display: none;
+            border-top: 4px solid #c00;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .result-container::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(204, 0, 0, 0.03) 0%, rgba(153, 0, 0, 0.03) 100%);
+            z-index: 0;
+        }
+        
+        .result-title {
+            font-size: 2.5rem;
+            color: #c00;
+            margin-bottom: 20px;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .final-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #c00;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 1;
+        }
+        
+        .message {
+            font-size: 1.3rem;
+            margin-bottom: 30px;
+            color: #666;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .progress-bar {
+            height: 12px;
+            background-color: #e0e0e0;
+            border-radius: 6px;
+            margin-bottom: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1);
+        }
+        
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, #c00, #900);
+            width: 0%;
+            transition: width 0.5s;
+            border-radius: 6px;
+        }
+        
+        .footer-content {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            border-radius: 15px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 L100,100 L0,0 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        .footer-logo {
+            font-size: 2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .footer-info {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .footer-contact {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 1.5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .question-container, .result-container {
+            animation: fadeInUp 0.5s ease forwards;
+        }
+        
+        @media (max-width: 600px) {
+            .container {
+                padding: 10px;
+            }
+            
+            h1 {
+                font-size: 2.2rem;
+            }
+            
+            .question {
+                font-size: 1.3rem;
+            }
+            
+            .option {
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            button {
+                padding: 12px 25px;
+                font-size: 1rem;
+            }
+            
+            .world {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: inline-block;
+                margin-bottom: 15px;
+                margin-top: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <a href="index.html" class="world">返回首页</a>
+            <h1>中国知识问答比赛</h1>
+            <p class="subtitle">测试您对中国历史、文化、地理的了解，挑战您的知识极限！</p>
+        </header>
+        
+        <div class="game-info">
+            <div class="score">得分: <span id="score-value">0</span></div>
+            <div class="timer">时间: <span id="time-value">60</span>秒</div>
+        </div>
+        
+        <div class="progress-bar">
+            <div class="progress" id="progress-bar"></div>
+        </div>
+        
+        <div class="question-container" id="question-container">
+            <div class="question-number">题目 <span id="current-question">1</span>/<span id="total-questions">10</span></div>
+            <div class="question" id="question-text">题目加载中...</div>
+            <div class="options" id="options-container">
+                <!-- 选项将通过JavaScript动态生成 -->
+            </div>
+            <div class="controls">
+                <button id="prev-btn" disabled>上一题</button>
+                <button id="next-btn">下一题</button>
+            </div>
+        </div>
+        
+        <div class="result-container" id="result-container">
+            <h2 class="result-title">比赛结束!</h2>
+            <div class="final-score" id="final-score">0</div>
+            <p class="message" id="result-message">感谢参与中国知识问答比赛!</p>
+            <button id="restart-btn">重新开始</button>
+        </div>
+        
+        <div class="footer-content">
+            <div class="footer-logo">信息科学技术学院</div>
+            <div class="footer-info">制作单位：甘肃农业大学</div>
+            <div class="footer-info">技术支持：孙家乐，王乾勇，杜佳楠</div>
+            <div class="footer-contact">联系我们：2967256170@qq.com | 电话：13280361002</div>
+        </div>
+    </div>
+
+    <script>
+        // 题目数据
+        const questions = [
+            {
+                question: "中国的首都是哪个城市？",
+                options: ["上海", "北京", "广州", "深圳"],
+                correct: 1
+            },
+            {
+                question: "中国最长的河流是哪一条？",
+                options: ["黄河", "长江", "珠江", "黑龙江"],
+                correct: 1
+            },
+            {
+                question: "以下哪个是中国古代四大发明之一？",
+                options: ["电灯", "电话", "指南针", "汽车"],
+                correct: 2
+            },
+            {
+                question: "中国的国宝动物是什么？",
+                options: ["金丝猴", "大熊猫", "东北虎", "藏羚羊"],
+                correct: 1
+            },
+            {
+                question: "中国有多少个民族？",
+                options: ["50个", "56个", "60个", "65个"],
+                correct: 1
+            },
+            {
+                question: "以下哪个是中国传统节日？",
+                options: ["圣诞节", "感恩节", "中秋节", "万圣节"],
+                correct: 2
+            },
+            {
+                question: "中国历史上第一个皇帝是谁？",
+                options: ["汉武帝", "唐太宗", "秦始皇", "宋太祖"],
+                correct: 2
+            },
+            {
+                question: "中国的国土面积在世界排名第几？",
+                options: ["第一", "第二", "第三", "第四"],
+                correct: 2
+            },
+            {
+                question: "以下哪个是中国著名的世界文化遗产？",
+                options: ["埃菲尔铁塔", "长城", "自由女神像", "金字塔"],
+                correct: 1
+            },
+            {
+                question: "中国的官方语言是什么？",
+                options: ["粤语", "普通话", "英语", "闽南语"],
+                correct: 1
+            }
+        ];
+
+        // 游戏状态
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 60;
+        let timer;
+        let userAnswers = new Array(questions.length).fill(null);
+
+        // DOM元素
+        const questionContainer = document.getElementById('question-container');
+        const resultContainer = document.getElementById('result-container');
+        const questionText = document.getElementById('question-text');
+        const optionsContainer = document.getElementById('options-container');
+        const currentQuestionElement = document.getElementById('current-question');
+        const totalQuestionsElement = document.getElementById('total-questions');
+        const scoreValue = document.getElementById('score-value');
+        const timeValue = document.getElementById('time-value');
+        const prevBtn = document.getElementById('prev-btn');
+        const nextBtn = document.getElementById('next-btn');
+        const finalScore = document.getElementById('final-score');
+        const resultMessage = document.getElementById('result-message');
+        const restartBtn = document.getElementById('restart-btn');
+        const progressBar = document.getElementById('progress-bar');
+
+        // 初始化游戏
+        function initGame() {
+            currentQuestion = 0;
+            score = 0;
+            timeLeft = 60;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            scoreValue.textContent = score;
+            timeValue.textContent = timeLeft;
+            totalQuestionsElement.textContent = questions.length;
+            
+            questionContainer.style.display = 'block';
+            resultContainer.style.display = 'none';
+            
+            startTimer();
+            loadQuestion();
+        }
+
+        // 开始计时器
+        function startTimer() {
+            clearInterval(timer);
+            timer = setInterval(() => {
+                timeLeft--;
+                timeValue.textContent = timeLeft;
+                updateProgressBar();
+                
+                if (timeLeft <= 0) {
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        // 更新进度条
+        function updateProgressBar() {
+            const progress = ((questions.length - currentQuestion) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // 加载题目
+        function loadQuestion() {
+            const question = questions[currentQuestion];
+            
+            currentQuestionElement.textContent = currentQuestion + 1;
+            questionText.textContent = question.question;
+            
+            optionsContainer.innerHTML = '';
+            question.options.forEach((option, index) => {
+                const optionElement = document.createElement('div');
+                optionElement.className = 'option';
+                if (userAnswers[currentQuestion] === index) {
+                    optionElement.classList.add('selected');
+                }
+                optionElement.textContent = option;
+                optionElement.addEventListener('click', () => selectOption(index));
+                optionsContainer.appendChild(optionElement);
+            });
+            
+            updateButtons();
+            updateProgressBar();
+        }
+
+        // 选择选项
+        function selectOption(index) {
+            // 清除之前的选择
+            const options = document.querySelectorAll('.option');
+            options.forEach(option => option.classList.remove('selected'));
+            
+            // 标记当前选择
+            options[index].classList.add('selected');
+            userAnswers[currentQuestion] = index;
+            
+            // 如果选择正确，增加分数
+            if (index === questions[currentQuestion].correct) {
+                score += 10;
+                scoreValue.textContent = score;
+            }
+        }
+
+        // 更新按钮状态
+        function updateButtons() {
+            prevBtn.disabled = currentQuestion === 0;
+            
+            if (currentQuestion === questions.length - 1) {
+                nextBtn.textContent = '完成';
+            } else {
+                nextBtn.textContent = '下一题';
+            }
+        }
+
+        // 上一题
+        prevBtn.addEventListener('click', () => {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                loadQuestion();
+            }
+        });
+
+        // 下一题/完成
+        nextBtn.addEventListener('click', () => {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                loadQuestion();
+            } else {
+                endGame();
+            }
+        });
+
+        // 结束游戏
+        function endGame() {
+            clearInterval(timer);
+            questionContainer.style.display = 'none';
+            resultContainer.style.display = 'block';
+            
+            finalScore.textContent = score;
+            
+            // 根据得分显示不同消息
+            if (score >= 80) {
+                resultMessage.textContent = '太棒了！您对中国知识了解非常深入！';
+            } else if (score >= 60) {
+                resultMessage.textContent = '不错！您对中国知识有一定了解！';
+            } else if (score >= 40) {
+                resultMessage.textContent = '还可以，继续学习中国知识吧！';
+            } else {
+                resultMessage.textContent = '需要多了解中国知识哦，加油！';
+            }
+        }
+
+        // 重新开始游戏
+        restartBtn.addEventListener('click', initGame);
+
+        // 初始化游戏
+        initGame();
+    </script>
+</body>
+</html>

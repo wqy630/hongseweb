@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>弘扬·中国红 - 在线学习</title>
+    <style>
+        /* 全局样式重置与基础设置 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", Arial, sans-serif;
+        }
+        body {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* 头部导航样式 */
+        header {
+            background: linear-gradient(135deg, #c71f26, #a0181f);
+            color: white;
+            padding: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        header::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,0 L100,0 L100,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        .header-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: relative;
+        }
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+        }
+       
+        .world {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            padding: 0.7rem 1.2rem;
+            border-radius: 6px;
+            transition: all 0.3s;
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            font-size: 20px;
+            line-height: normal;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        
+        .world:hover {
+            background: rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(0,0,0,0.15);
+        }
+        
+       /* 移动端导航适配 */
+       @media (max-width: 768px) {
+           .header-top {
+               flex-direction: column;
+               gap: 15px;
+               text-align: center;
+           }
+            nav ul {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 15px;
+            }
+            
+            .world {
+                position: relative;
+                top: auto;
+                right: auto;
+                display: inline-block;
+                margin-top: 10px;
+            }
+        }
+
+        /* 主要内容区样式 */
+        main {
+            padding: 40px 0;
+        }
+        .section-title {
+            color: #c71f26;
+            font-size: 28px;
+            margin-bottom: 30px;
+            border-left: 5px solid #c71f26;
+            padding-left: 15px;
+            position: relative;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.05);
+        }
+        
+        .section-title::after {
+            content: "";
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 50px;
+            height: 2px;
+            background: #c71f26;
+            border-radius: 1px;
+        }
+        
+        .section-desc {
+            font-size: 18px;
+            margin-bottom: 40px;
+            color: #666;
+            max-width: 800px;
+            line-height: 1.8;
+        }
+
+        /* 红色知识闪卡样式 */
+        .flashcards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 25px;
+            margin-bottom: 60px;
+        }
+        .flashcard {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 25px;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid #c71f26;
+        }
+        
+        .flashcard::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(199, 31, 38, 0.03) 0%, rgba(160, 24, 31, 0.03) 100%);
+            z-index: 0;
+        }
+        
+        .flashcard:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 12px 25px rgba(0,0,0,0.15);
+        }
+        .flashcard-title {
+            color: #c71f26;
+            font-size: 22px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+        .flashcard-content {
+            font-size: 16px;
+            color: #555;
+            position: relative;
+            z-index: 1;
+            line-height: 1.7;
+        }
+
+        /* 知识快问快答样式 */
+        .quiz {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid #c71f26;
+        }
+        
+        .quiz::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(199, 31, 38, 0.03) 0%, rgba(160, 24, 31, 0.03) 100%);
+            z-index: 0;
+        }
+        
+        .quiz-question {
+            font-size: 20px;
+            margin-bottom: 20px;
+            color: #333;
+            font-weight: 600;
+            position: relative;
+            z-index: 1;
+        }
+        .quiz-options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        .quiz-option {
+            padding: 14px 18px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: white;
+        }
+        .quiz-option:hover {
+            background-color: #f8f8f8;
+            transform: translateX(5px);
+        }
+        .quiz-option.selected {
+            background-color: #ffebee;
+            border-color: #c71f26;
+            color: #c71f26;
+            font-weight: 600;
+            box-shadow: 0 3px 8px rgba(199, 31, 38, 0.2);
+        }
+
+        .game-btn {
+            background: linear-gradient(135deg, #c71f26, #a0181f);
+            color: white;
+            border: none;
+            padding: 12px 28px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(199, 31, 38, 0.3);
+            position: relative;
+            z-index: 1;
+        }
+        .game-btn:hover {
+            background: linear-gradient(135deg, #a0181f, #8a141a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(199, 31, 38, 0.4);
+        }
+        
+        #answer-result {
+            margin-top: 20px;
+            font-weight: bold;
+            padding: 12px 15px;
+            border-radius: 6px;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* 学习反馈问卷样式 */
+        .feedback-form {
+            background: linear-gradient(145deg, #ffffff, #f8f9fa);
+            border-radius: 12px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            padding: 30px;
+            margin-bottom: 60px;
+            position: relative;
+            overflow: hidden;
+            border-top: 4px solid #c71f26;
+        }
+        
+        .feedback-form::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(199, 31, 38, 0.03) 0%, rgba(160, 24, 31, 0.03) 100%);
+            z-index: 0;
+        }
+        
+        .form-group {
+            margin-bottom: 25px;
+            position: relative;
+            z-index: 1;
+        }
+        .form-label {
+            display: block;
+            font-size: 16px;
+            margin-bottom: 10px;
+            color: #333;
+            font-weight: 600;
+        }
+        .form-checkbox {
+            margin-right: 10px;
+            cursor: pointer;
+        }
+        .rating {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+        .rating-option {
+            cursor: pointer;
+            padding: 8px 15px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            transition: all 0.3s;
+        }
+        .rating-option.selected {
+            background-color: #c71f26;
+            color: white;
+            border-color: #c71f26;
+            transform: scale(1.05);
+        }
+        .form-textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: vertical;
+            min-height: 120px;
+            transition: border-color 0.3s;
+        }
+        .form-textarea:focus {
+            border-color: #c71f26;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(199, 31, 38, 0.1);
+        }
+        .submit-btn {
+            background: linear-gradient(135deg, #c71f26, #a0181f);
+            color: white;
+            border: none;
+            padding: 14px 35px;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 10px rgba(199, 31, 38, 0.3);
+        }
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #a0181f, #8a141a);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(199, 31, 38, 0.4);
+        }
+
+        /* 页脚样式 */
+        .footer-content {
+            background: linear-gradient(135deg, #2c3e50, #1a2530);
+            color: white;
+            padding: 40px 0 20px;
+            margin-top: 60px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .footer-content::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" preserveAspectRatio="none"><path d="M0,100 L100,100 L0,0 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+            background-size: cover;
+        }
+        
+        .footer-logo {
+            font-size: 2.2rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: white;
+            text-align: center;
+            position: relative;
+        }
+        
+        .footer-info {
+            font-size: 1.1rem;
+            margin-bottom: 0.8rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .footer-contact {
+            font-size: 1rem;
+            opacity: 0.9;
+            margin-top: 1.5rem;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+            color: #aaa;
+            font-size: 14px;
+            margin-top: 30px;
+            position: relative;
+        }
+        
+        /* 动画效果 */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .flashcard, .quiz, .feedback-form {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        
+        .flashcard:nth-child(1) { animation-delay: 0.1s; }
+        .flashcard:nth-child(2) { animation-delay: 0.2s; }
+        .flashcard:nth-child(3) { animation-delay: 0.3s; }
+        .flashcard:nth-child(4) { animation-delay: 0.4s; }
+        .flashcard:nth-child(5) { animation-delay: 0.5s; }
+        .flashcard:nth-child(6) { animation-delay: 0.6s; }
+        .flashcard:nth-child(7) { animation-delay: 0.7s; }
+        .flashcard:nth-child(8) { animation-delay: 0.8s; }
+        .flashcard:nth-child(9) { animation-delay: 0.9s; }
+        
+        .quiz { animation-delay: 0.3s; }
+        .feedback-form { animation-delay: 0.5s; }
+    </style>
+    <script>
+        // 快问快答功能
+        function selectOption(option) {
+            const options = document.querySelectorAll('.quiz-option');
+            options.forEach(opt => opt.classList.remove('selected'));
+            option.classList.add('selected');
+        }
+
+        function checkAnswer() {
+            const selected = document.querySelector('.quiz-option.selected');
+            const result = document.getElementById('answer-result');
+            if (selected && selected.textContent.includes('七届二中全会')) {
+                result.textContent = '回答正确！';
+                result.style.color = '#28a745';
+                result.style.background = '#e8f5e8';
+            } else {
+                result.textContent = '回答错误，正确答案是C 七届二中全会';
+                result.style.color = '#dc3545';
+                result.style.background = '#fce8e6';
+            }
+            result.style.display = 'block';
+        }
+
+        // 学习反馈功能
+        function selectRating(element) {
+            const ratings = document.querySelectorAll('.rating-option');
+            ratings.forEach(rating => rating.classList.remove('selected'));
+            element.classList.add('selected');
+        }
+        
+        function submitFeedback() {
+            alert('感谢您的反馈！我们会继续改进学习内容。');
+            // 在实际应用中，这里应该提交表单数据到服务器
+        }
+    </script>
+</head>
+<body>
+    <!-- 头部导航 -->
+    <header>
+        <div class="container">
+            <div class="header-top">
+                <div class="logo">弘扬·中国红 - 在线学习</div>
+                <a href="http://127.0.0.1:8848/%E7%BD%91%E9%A1%B5/%E7%BD%91%E9%A1%B5.html" class="world">☇ 返回首页</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- 主要内容区 -->
+    <main>
+        <div class="container">
+            <!-- 红色知识闪卡 -->
+<section id="flashcards">
+    <h2 class="section-title">红色知识闪卡</h2>
+    <div class="flashcards">
+        <div class="flashcard">
+            <div class="flashcard-title">井冈山精神</div>
+            <div class="flashcard-content">形成于1927年秋收起义后井冈山革命根据地创建时期，是中国共产党建立的第一个农村革命根据地孕育的精神。核心内涵包括：坚定信念（面对"红旗到底能打多久"的质疑始终不渝）、艰苦奋斗（红军将士用红米南瓜充饥仍保持斗志）、实事求是（开创"农村包围城市"的革命新路）、敢闯新路（打破教条主义束缚）、依靠群众（"三大纪律八项注意"奠定军民鱼水情）、勇于胜利（以弱胜强打破敌人多次"会剿"）。作为中国革命精神的源头，它回答了"中国革命向何处去"的根本问题，为中国革命保留了珍贵火种。</div>
+        </div>
+        <div class="flashcard">
+            <div class="flashcard-title">长征精神</div>
+            <div class="flashcard-content">1934年10月至1936年10月，红军历经二万五千里长征孕育的精神丰碑。其核心是：把全国人民和中华民族的根本利益看得高于一切的爱国主义情怀；坚定革命理想信念（"革命理想高于天"）；不怕任何艰难险阻（翻越夹金山、跋涉松潘草地）；不惜付出一切牺牲（湘江战役红军伤亡过半仍奋勇前进）；坚持独立自主、实事求是（遵义会议确立正确路线）；顾全大局、紧密团结（四渡赤水体现的战略协同）；依靠人民群众、同甘共苦（彝海结盟彰显民族情谊）。长征精神是中华民族百折不挠、自强不息的民族精神的最高体现，至今仍是攻坚克难的精神动力。</div>
+        </div>
+        <div class="flashcard">
+            <div class="flashcard-title">雷锋精神</div>
+            <div class="flashcard-content">以共产主义战士雷锋命名的精神，集中体现于1963年毛泽东"向雷锋同志学习"的题词之后广泛传播。核心内涵包括：全心全意为人民服务的奉献精神（"人的生命是有限的，为人民服务是无限的"）；立足岗位、忠于职守的"螺丝钉精神"（在鞍钢和部队都兢兢业业）；艰苦奋斗、勤俭节约的"补丁精神"（衣服袜子打满补丁仍舍不得换）；助人为乐、甘于奉献的集体主义精神（冒雨护送老人小孩、悄悄为战友补被子）。作为社会主义道德的标杆，雷锋精神跨越时代，在志愿服务、岗位建功等当代实践中不断焕发新活力。</div>
+        </div>
+        <div class="flashcard">
+            <div class="flashcard-title">延安精神</div>
+            <div class="flashcard-content">形成于1935年中央红军抵达陕北至1948年延安解放的十三年间，是中国革命圣地的精神标识。核心包括：坚定正确的政治方向（坚持抗日民族统一战线，反对投降主义）；解放思想、实事求是的思想路线（通过整风运动破除教条主义）；全心全意为人民服务的根本宗旨（毛泽东《为人民服务》演讲确立的价值准则）；自力更生、艰苦奋斗的创业精神（南泥湾大生产运动实现"自己动手、丰衣足食"）。延安精神培育了党的优良作风，是中国共产党从幼稚走向成熟的精神见证，至今仍是党的建设的重要指引。</div>
+        </div>
+        <div class="flashcard">
+            <div class="flashcard-title">西柏坡精神</div>
+            <div class="flashcard-content">1948-1949年党中央在西柏坡时期形成，是中国革命即将取得全国胜利的历史转折期的精神结晶。核心内涵是"两个务必"（毛泽东在七届二中全会提出：务必使同志们继续地保持谦虚、谨慎、不骄、不躁的作风，务必使同志们继续地保持艰苦奋斗的作风）；敢于斗争、敢于胜利的进取精神（指挥辽沈、淮海、平津三大战役的气魄）；依靠群众、团结统一的民主精神（召开全国土地会议，实现"耕者有其田"）。西柏坡精神提出了"进京赶考"的时代命题，为党执政后保持先进性和纯洁性提供了重要警示。</div>
+        </div>
+        <div class="flashcard">
+            <div class="flashcard-title">抗疫精神</div>
+            <div class="flashcard-content">2020年以来在抗击新冠肺炎疫情中形成的新时代精神旗帜。核心内涵包括：生命至上（坚持人民至上、生命至上，从出生仅30多个小时的婴儿到100多岁的老人都全力救治）；举国同心（全国各族人民风雨同舟、众志成城，4万多名医护人员驰援湖北）；舍生忘死（白衣执甲、逆行出征，社区工作者、公安干警、志愿者坚守一线）；尊重科学（坚持"动态清零"，推广疫苗研发和中医药应用）；命运与共（向120多个国家和国际组织提供援助，践行人类卫生健康共同体理念）。抗疫精神展现了中国人民在重大风险挑战面前的精神伟力，是新时代民族精神的生动诠释。</div>
+        </div>
+    </div>
+</section>
+
+            <!-- 知识快问快答 -->
+            <section id="quiz">
+                <h2 class="section-title">知识快问快答</h2>
+                <p class="section-desc">测试您对红色知识的掌握程度，选择正确答案并提交。</p>
+                <div class="quiz">
+                    <div class="quiz-question">Q1. "两个务必"是哪次会议提出的重要要求？</div>
+                    <div class="quiz-options">
+                        <div class="quiz-option" onclick="selectOption(this)">A 中共一大</div>
+                        <div class="quiz-option" onclick="selectOption(this)">B 遵义会议</div>
+                        <div class="quiz-option" onclick="selectOption(this)">C 七届二中全会</div>
+                        <div class="quiz-option" onclick="selectOption(this)">D 延安整风</div>
+                    </div>
+                    <button class="game-btn" onclick="checkAnswer()">提交答案</button>
+                    <div id="answer-result"></div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- 页脚 -->
+    <div class="footer-content">
+        <div class="container">
+            <div class="footer-logo">信息科学技术学院</div>
+            <div class="footer-info">制作单位：甘肃农业大学</div>
+            <div class="footer-info">技术支持：孙家乐，王乾勇，杜佳楠</div>
+            <div class="footer-contact">联系我们：2967256170@qq.com | 电话：13280361002</div>
+           
+        </div>
+    </div>
+</body>
+</html>
